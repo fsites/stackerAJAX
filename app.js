@@ -133,13 +133,17 @@ var showAnswerers = function(answerer) {
 	profileImage.attr('href', answerer.user.profile_image);
 	console.log(answerer.user.profile_image);
 
-	//set username
-	var userName = result.find('.user-name');
-	userName.text(answerer.user.display_name);
 
-	//set score
+	//show name and link to user
+	var linkUser = result.find('.user-link');
+	linkUser.attr('href', answerer.user.link);
+	linkUser.text(answerer.user.display_name);
+
+	//show score score
 	var score = result.find('.score');
 	score.text(answerer.score);
+
+
 
 	return result;
 }
