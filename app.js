@@ -6,6 +6,14 @@ $(document).ready( function() {
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
 	});
+
+	$('.inspiration-getter').submit(function(event){
+		//zero out results if previous search has run
+		$('.results').html('');
+		//get the value of tags submitted by user
+		var tag = $('.inspiration-getter').find("input[name='answerers']").val();
+		getAnswerers(tag);
+	});
 });
 
 // this function takes the question object returned by StackOverflow 
@@ -87,6 +95,56 @@ var getUnanswered = function(tags) {
 		$('.search-results').append(errorElem);
 	});
 };
+
+var getAnswerers = function(tag) {
+	var request = { site: 'stackoverflow'}
+
+	var result = $.ajax({
+		url: "http://api.stackexchange.com/2.2/tags/" + tag + "/top-answerers/all_time",
+		data: request,
+		dataType: "jsonp",
+		type: "GET",
+		})
+	.done(function(result){
+		var searchResults = showSearchResults(tag, result.items.length);
+
+		$('.search-results').html(searchResults);
+
+		$.each(result.items, function(i, item) {
+			var answerer = showAnswerers(item);
+			$('.results').append(answerer);
+		});
+	})
+	.fail(function(jqXHR, error, errorThrown){
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
+	
+};
+
+var showAnswerers = function(answerer) {
+	console.log("showAnswerers invoked");
+
+	//clone our result template
+	var result = $('.templates .answerer').clone();
+
+	//set profile image
+	var profileImage = result.find('.user-image');
+	profileImage.attr('href', answerer.user.profile_image);
+	console.log(answerer.user.profile_image);
+
+	//set username
+	var userName = result.find('.user-name');
+	userName.text(answerer.user.display_name);
+
+	//set score
+	var score = result.find('.score');
+	score.text(answerer.score);
+
+	return result;
+}
+
+
 
 
 
